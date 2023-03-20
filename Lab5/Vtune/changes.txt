@@ -1,0 +1,4 @@
+1. Removed calculateCRC
+2. Removed a function with switch, replaced with an array
+3. Removed modulo and replaced with bitwise and
+4. replaced do while with for loop
