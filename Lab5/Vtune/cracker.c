@@ -9,7 +9,7 @@
 
 // CONFIGURATION
 // VARIABLE PARAMETER
-#define ITER 10000                  // Maximum number of iterations
+#define ITER 10000                 // Maximum number of iterations
 
 // CONSTANT PARAMETERS
 #define MAX_CRYPT_LEN 200         // Maximum length of the ciphertext
@@ -38,33 +38,35 @@ int my_strlen(char *str)
 // Decrypting ciphertext using the found password
 char* DeCrypt(char *ciphertext, char *pswd)
 {
-    // int sub_func[32] = {1,3,2,4,7,6,10,5,9,16,15,14,11,17,12,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,102};
-    int sub_func(int num)
-    {
-        switch (num)
-        {
-            case 0: return 1; 
-            case 1: return 3;
-            case 2: return 2;
-            case 3: return 4;
-            case 4: return 7;
-            case 5: return 6;
-            case 6: return 10;
-            case 7: return 5;
-            case 8: return 9;
-            case 9: return 16;
-            case 10: return 15;
-            case 11: return 14;
-            case 12: return 11;
-            case 13: return 17;
-            case 14: return 12;
-            case 31: return 102;
-            default: return -1;
-        }
-    }
+    int sub_func[32] = {1,3,2,4,7,6,10,5,9,16,15,14,11,17,12,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,102};
+    // int sub_func(int num)
+    // {
+    //     switch (num)
+    //     {
+    //         case 0: return 1; 
+    //         case 1: return 3;
+    //         case 2: return 2;
+    //         case 3: return 4;
+    //         case 4: return 7;
+    //         case 5: return 6;
+    //         case 6: return 10;
+    //         case 7: return 5;
+    //         case 8: return 9;
+    //         case 9: return 16;
+    //         case 10: return 15;
+    //         case 11: return 14;
+    //         case 12: return 11;
+    //         case 13: return 17;
+    //         case 14: return 12;
+    //         case 31: return 102;
+    //         default: return -1;
+    //     }
+    // }
 
-    char* buff = (char*)malloc(my_strlen(ciphertext));
-    memcpy(buff, ciphertext, my_strlen(ciphertext));
+    int cipherLen = my_strlen(ciphertext);
+
+    char* buff = (char*)malloc(cipherLen);
+    memcpy(buff, ciphertext, cipherLen);
 
     int p = 0;
     for (int py = 0; py < PASS_Y_LIM; py++) {
@@ -81,9 +83,9 @@ char* DeCrypt(char *ciphertext, char *pswd)
                 prf_int = 31;
             }
             
-            int sub_result = sub_func(prf_int & mask) ^ pswd[p];
+            int sub_result = sub_func[prf_int & mask] ^ pswd[p];
 
-            buff[p & (my_strlen(ciphertext) - 1)] ^= sub_result;
+            buff[p & (cipherLen - 1)] ^= sub_result;
             
         } 
     } 
@@ -104,13 +106,13 @@ int CheckCRC(char *plaintext, int validCRC)
     
     int a;
     int x = -1; // CRC calculation error
-
-    for (a = 0; a < my_strlen(plaintext); a++)
+    int plainLen = my_strlen(plaintext);
+    for (a = 0; a < plainLen; a++)
         x += *(int *)(plaintext + a);
     
     free(plaintext);
 
-    if ((x == validCRC) && (my_memcmp(plaintext, correct_plaintext, my_strlen(plaintext))))
+    if ((x == validCRC) && (my_memcmp(plaintext, correct_plaintext, plainLen)))
         return 1;
     return 0;
 }
